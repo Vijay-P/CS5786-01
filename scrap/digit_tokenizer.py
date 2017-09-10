@@ -3,6 +3,7 @@
 from matplotlib import pyplot as plot
 import numpy as np
 from scipy.spatial import distance
+from sklearn.metrics import euclidean_distances
 import pandas as pd
 import random as rn
 
@@ -96,22 +97,22 @@ def plot_one_vec_of_each_digit(df):
     plot.show()
 
 
-def plot_nearest_neighbor_for_each(df):
-    # get a vector of random digits, 0-9
-    random_digits = one_of_each_digit(df, vectorize_digit)
+def l2_distances(input_digits, compare_digits):
+    distance = euclidean_distances(input_digits, compare_digits)
+    distance = distance[np.tril(distance) != 0]
+    return distance
 
-    # make a 2d list of flattened image vectors and their respective labels
-    allpts = [[df.ix[index, 1:], df.ix[index, 0], index] for index in range(df.shape[0])]
 
+def l2_match(input_digits, compare_digits):
     # a vector to record the matching minima
     minima = []
 
-    for label, data in random_digits.items():
+    for label, data in input_digits.items():
         min_vector = np.array([])
         min_distance = 1000000
         digit_tags = 0
         match_index = 0
-        for dpoint in allpts:
+        for dpoint in compare_digits:
             current_l2 = distance.euclidean(data[0], dpoint[0])
             if (current_l2 < min_distance) and (current_l2 != 0.0):
                 min_vector = dpoint[0]
@@ -119,6 +120,14 @@ def plot_nearest_neighbor_for_each(df):
                 digit_tag = dpoint[1]
                 match_index = dpoint[2]
         minima.append([min_vector, min_distance, digit_tag, match_index])
+    return minima
+
+
+def plot_nearest_neighbor_for_each(df):
+    # plot_nearest_neighbor_for_each(df0)
+    random_digits = one_of_each_digit(df, vectorize_digit)
+    allpts = [[df.ix[index, 1:], df.ix[index, 0], index] for index in range(df.shape[0])]
+    minima = l2_match(random_digits, allpts)
     fig = plot.figure()
     fig.suptitle("Grid of Each Digit With Minimum L2 Match")
     for x in range(len(random_digits)):
@@ -135,12 +144,38 @@ def plot_nearest_neighbor_for_each(df):
     fig.savefig("matches.png")
 
 
+def all_of_digit(df, digit):
+    return [pd.Series.tolist(df.ix[index, 1:])
+            for index in range(df.shape[0]) if df.ix[index, 0] == digit]
+
+
+def binary_comp(df):
+    zeroes = all_of_digit(df, 0)
+    ones = all_of_digit(df, 1)
+    zero_v_zero = l2_distances(zeroes, zeroes)
+    zero_v_one = l2_distances(zeroes, ones)
+    one_v_one = l2_distances(ones, ones)
+    plot.figure()
+    plot.title("Zero vs Zero")
+    plot.hist(np.array(zero_v_zero), bins=100, normed=True, alpha=0.5)
+    plot.savefig("0v0.png")
+    plot.figure()
+    plot.title("Zero vs One")
+    plot.hist(np.array(zero_v_one), bins=100, normed=True, alpha=0.5)
+    plot.savefig("0v1.png")
+    plot.figure()
+    plot.title("One vs One")
+    plot.hist(np.array(one_v_one), bins=100, normed=True, alpha=0.5)
+    plot.savefig("1v1.png")
+
+
 def main():
     df0 = pd.read_csv("../kaggle_mnist_dataset/train.csv")
     # display_digit(plot, gridify_digit(df0, 8))
     # prior_probability(df0)
     # plot.show()
-    plot_nearest_neighbor_for_each(df0)
+    # plot_nearest_neighbor_for_each(df0)
+    binary_comp(df0)
 
 if __name__ == '__main__':
     main()
