@@ -157,16 +157,22 @@ def binary_comp(df):
     one_v_one = l2_distances(ones, ones)
     plot.figure()
     plot.title("Zero vs Zero")
-    plot.hist(np.array(zero_v_zero), bins=100, normed=True, alpha=0.5)
+    hist1 = plot.hist(np.array(zero_v_zero), bins=100, normed=True, alpha=0.5)
     plot.savefig("0v0.png")
     plot.figure()
     plot.title("Zero vs One")
-    plot.hist(np.array(zero_v_one), bins=100, normed=True, alpha=0.5)
+    hist2 = plot.hist(np.array(zero_v_one), bins=100, normed=True, alpha=0.5)
     plot.savefig("0v1.png")
     plot.figure()
     plot.title("One vs One")
-    plot.hist(np.array(one_v_one), bins=100, normed=True, alpha=0.5)
+    hist3 = plot.hist(np.array(one_v_one), bins=100, normed=True, alpha=0.5)
     plot.savefig("1v1.png")
+    return hist1, hist2, hist3
+
+
+def make_ROC(df):
+    h1, h2, h3 = binary_comp(df)
+    print(len(h1))
 
 
 def main():
@@ -176,6 +182,25 @@ def main():
     # plot.show()
     # plot_nearest_neighbor_for_each(df0)
     binary_comp(df0)
+    # make_ROC()
 
 if __name__ == '__main__':
-    main()
+    # main()
+    df = pd.read_csv("../kaggle_mnist_dataset/train.csv")
+    zeroes = all_of_digit(df, 0)
+    ones = all_of_digit(df, 1)
+    zero_v_zero = l2_distances(zeroes, zeroes)
+    zero_v_one = l2_distances(zeroes, ones)
+    one_v_one = l2_distances(ones, ones)
+    plot.figure()
+    plot.title("Zero vs Zero")
+    hist1 = plot.hist(np.array(zero_v_zero), bins=100, normed=True, alpha=0.5)
+    plot.savefig("0v0.png")
+    plot.figure()
+    plot.title("Zero vs One")
+    hist2 = plot.hist(np.array(zero_v_one), bins=100, normed=True, alpha=0.5)
+    plot.savefig("0v1.png")
+    plot.figure()
+    plot.title("One vs One")
+    hist3 = plot.hist(np.array(one_v_one), bins=100, normed=True, alpha=0.5)
+    plot.savefig("1v1.png")
