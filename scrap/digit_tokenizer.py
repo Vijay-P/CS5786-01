@@ -156,23 +156,64 @@ def binary_comp(df):
     zero_v_one = l2_distances(zeroes, ones)
     one_v_one = l2_distances(ones, ones)
     plot.figure()
-    plot.title("Zero vs Zero")
-    hist1 = plot.hist(np.array(zero_v_zero), bins=100, normed=True, alpha=0.5)
-    plot.savefig("0v0.png")
+    plot.title("Zero vs Zero(b) and Zero vs One(r)")
+    zvz = plot.hist(np.array(zero_v_zero), bins=100, normed=True,
+                    alpha=0.5, color="b", range=(0, 4500))
+    zvo = plot.hist(np.array(zero_v_one), bins=100, normed=True,
+                    alpha=0.5, color="r", range=(0, 4500))
+    plot.savefig("zeroes_score.png")
     plot.figure()
-    plot.title("Zero vs One")
-    hist2 = plot.hist(np.array(zero_v_one), bins=100, normed=True, alpha=0.5)
-    plot.savefig("0v1.png")
-    plot.figure()
-    plot.title("One vs One")
-    hist3 = plot.hist(np.array(one_v_one), bins=100, normed=True, alpha=0.5)
-    plot.savefig("1v1.png")
-    return hist1, hist2, hist3
+    plot.title("One vs One(b) and Zero vs One(r)")
+    ovo = plot.hist(np.array(one_v_one), bins=100, normed=True,
+                    alpha=0.5, color="b", range=(0, 4500))
+    plot.hist(np.array(zero_v_one), bins=100, normed=True, alpha=0.5, color="r", range=(0, 4500))
+    plot.savefig("ones_score.png")
+    return zvz, zvo, ovo
 
 
 def make_ROC(df):
-    h1, h2, h3 = binary_comp(df)
-    print(len(h1))
+    zvz, zvo, ovo = binary_comp(df)
+    eer = 0
+    tp = 0
+    fn = sum(zvz[0])
+    fp = 0
+    tn = sum(zvo[0])
+    roc_points = [[tp, fn, fp, tn]]
+    for tau in range(len(zvz[0])):
+        adj = (zvz[0][tau] + ovo[0][tau]) / 2
+        tp += adj
+        fn -= adj
+        roc_points.append([tp, fn, fp, tn])
+    for tau in range(len(zvo[0])):
+        adj = zvo[0][tau]
+        fp += adj
+        tn -= adj
+        current = roc_points[tau]
+        current[2] = fp
+        current[3] = tn
+        roc_points[tau] = current
+    tpr = []
+    tnr = []
+    eer_min = 100
+    eer = []
+    for value in range(len(roc_points[:-1])):
+        c_tpr = roc_points[value][0] / (roc_points[value][0] + roc_points[value][1])
+        c_tnr = roc_points[value][3] / (roc_points[value][2] + roc_points[value][3])
+        tpr.append(c_tpr)
+        tnr.append(c_tnr)
+        if(abs(c_tpr - c_tnr) < eer_min and abs(c_tpr - c_tnr) != 0.0):
+            eer_min = abs(c_tpr - c_tnr)
+            eer = [c_tnr, c_tpr]
+    plot.figure()
+    plot.title("ROC")
+    plot.ylim([0, 1])
+    plot.ylabel("TPR")
+    plot.xlim([0, 1])
+    plot.xlabel("TNR")
+    plot.text(eer[0], eer[1], str(eer[0])[:4] + "," + str(eer[1])[:4])
+    plot.plot(eer[0], eer[1], "o")
+    plot.plot(tnr, tpr, "-")
+    plot.savefig("ROC.png")
 
 
 def main():
@@ -181,8 +222,8 @@ def main():
     # prior_probability(df0)
     # plot.show()
     # plot_nearest_neighbor_for_each(df0)
-    binary_comp(df0)
-    # make_ROC()
+    # binary_comp(df0)
+    make_ROC(df0)
 
 if __name__ == '__main__':
     main()
