@@ -22,13 +22,13 @@
 	Vijay Pillai\\
 	Thomas Matecki}
 \maketitle
+
 \section*{Programming Exercises}
 
 \begin{enumerate}
 	\item Digit Tokenizer
 	\begin{enumerate}[label=(\alph*)]
-		\item 
-		Training and test data are located in files \textit{train.csv} and \textit{test.csv} respectively. The training data comprises 42000 images and the test data comprises 28000 images.
+		\item Training and test data are located in files \textit{train.csv} and \textit{test.csv} respectively. The training data comprises 42000 images and the test data comprises 28000 images.
 
 		\item Figure 1 is one of each digit(0-9) displayed as a 28 by 28 pixel grid.  
 		\begin{center}
@@ -43,23 +43,25 @@
 		\newpage
 		\item The distribution of digits within the training data is nearly uniform.
 		\begin{center}
-%		\includegraphics{distrib.png}
+		\includegraphics[width=12cm{distrib.png}
 		\end{center}	
 		\item
 	\end{enumerate}
 	\item The Titanic Disaster
-	\begin{enumerate}[label=(\alph*)]
-		\item Datasets are can be found in directory 
-		\item Logistical regression is performed using scikit-learn's linearmodel.LogisticalRegression. Two things to note:
+	\begin{enumerate}
+		\item Logistical regression is performed using scikit-learn's lLogisticalRegression. Two things to note:
+		\item The result submitted to kaggle is included as file \textit{result.csv}.
+
 		\begin{itemize}
 		\item The categoricaly features are translated to \textit{One Hot} encoding before the classifier is parsed.
 		\item Features \textit{PassengerId, Name, Ticket Fare, Cabin}, and \textit{Embarked} are ommitted from the classifer.  Through some trial and error, one can draw the conclusion that omitting these features yields a more accurate classifier, most likely because they are scarcely populated(E.g. Cabin) or contain a a high number of unique, categorical values(E.g. Fare). The values thus increase the dimensionality of the model while offer nothing but idiosyncracies that likely exist only in the training data.\\
 		\end{itemize}
-		\item The result submitted to kaggle is included as file \textit{result.csv}.
-	\end{enumerate}
-	
-\end{enumerate}
 
+
+	\end{enumerate}
+	\end{enumerate}
+
+\end{enumerate}
 \section*{Written Exercises}	
 \begin{enumerate}
 	\item Based on the defintions of variance:\\
