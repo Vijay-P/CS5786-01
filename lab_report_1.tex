@@ -49,8 +49,13 @@
 	\end{enumerate}
 	\item The Titanic Disaster
 	\begin{enumerate}[label=(\alph*)]
-		\item Pro
-		\item 
+		\item Datasets are can be found in directory 
+		\item Logistical regression is performed using scikit-learn's linearmodel.LogisticalRegression. Two things to note:
+		\begin{itemize}
+		\item The categoricaly features are translated to \textit{One Hot} encoding before the classifier is parsed.
+		\item Features \textit{PassengerId, Name, Ticket Fare, Cabin}, and \textit{Embarked} are ommitted from the classifer.  Through some trial and error, one can draw the conclusion that omitting these features yields a more accurate classifier, most likely because they are scarcely populated(E.g. Cabin) or contain a a high number of unique, categorical values(E.g. Fare). The values thus increase the dimensionality of the model while offer nothing but idiosyncracies that likely exist only in the training data.\\
+		\end{itemize}
+		\item The result submitted to kaggle is included as file \textit{result.csv}.
 	\end{enumerate}
 	
 \end{enumerate}
