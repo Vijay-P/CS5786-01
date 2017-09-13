@@ -43,7 +43,7 @@
 		\newpage
 		\item The distribution of digits within the training data is nearly uniform.
 		\begin{center}
-%		\includegraphics{distrib.png}
+		\includegraphics[width=12cm]{distrib.png}
 		\end{center}	
 		\item
 	\end{enumerate}
@@ -53,7 +53,7 @@
 		\item Implementation is completed using scipy's LogisticRegression class and can be found in file titanic.py. Two things to note about the implementation:
 		\begin{itemize}
 		\item The categoricaly features are translated to \textit{One Hot} encoding before the classifier is parsed.
-		\item Features \textit{PassengerId, Name, Ticket Fare, Cabin}, and \textit{Embarked} are ommitted from the classifer.  Through some trial and error, one can draw the conclusion that omitting these features yields a more accurate classifier, most likely because they are scarcely populated(E.g. Cabin) or contain a a high number of unique, categorical values(E.g. Fare). The values thus increase the dimensionality of the model while offer nothing but idiosyncracies that likely exist only in the training data.
+		\item Features \textit{PassengerId, Name, Ticket Fare, Cabin}, and \textit{Embarked} are ommitted from the classifer.  Through some trial and error, one can draw the conclusion that omitting these features yields a more accurate classifier, most likely because they are scarcely populated(E.g. Cabin) or contain a a high number of unique, categorical values(E.g. Fare). The values thus increase the dimensionality of the model while offer nothing but idiosyncracies that likely exist only in the sample training data.
 		\end{itemize}
 		\item the result of the classifier have been submitted to kaggle and can be found in the \textit{./titanic\_data}. 
 	\end{enumerate}
@@ -128,9 +128,10 @@
 			 C = i \left( \frac{n}{i} \right)\left( \frac{n(i-1}{i} \right) =  \frac{n^2(i-1)}{i}
 			\end{equation*}
 			
-			Extending out conclusion from (b), candidates for $k$ should be tested with an adjustment proportional to $\frac{i-1}{i}$ (specifically - adjust k according to the change in density that occurs when removing $\frac{1}{i}$th of the samples in the dimension - see (e), of the feature vector, $x$). \\
+			Extending our conclusion from (b), candidates for $k$ should be tested with an adjustment proportional to $\frac{i-1}{i}$ (specifically - adjust k according to the change in density that occurs when removing $\frac{1}{i}$th of the samples form the training data - see (e) one may also consider the dimensionality, of the feature vector, $x$). \\
 			
-			Choosing $i$ to be large(say - 10), will mitigate the impact of density reduction(dependent upon dimension), however the larger $i$ is more computationally expensive($C_i \rightarrow n^2$).			
+			Choosing $i$ to be large(say - 10), will mitigate the impact of density reduction, however the larger $i$ is more computationally expensive($i \rightarrow \infty, C_i \rightarrow n^2$).
+						
 			\item If $k$ is large, for some $x$ it may be beneficial to weigh votes from a neighbor $N_k(x)$ using some function $w$ that decreases as the distance $d$, from $x$ increases. E.g.:
 			\begin{equation*}
 				w_{k}(x,N_k(x) = \frac{1}{1 + d(x,N_k(x) )}
