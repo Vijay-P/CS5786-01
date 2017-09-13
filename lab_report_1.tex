@@ -35,26 +35,26 @@
 		\captionof{figure}{}
 		\includegraphics[width=12cm]{one_grid_x_each_digit.png}
 		\end{center}
-%		Alternatively, the digit images can be plotted as one dimensional vectors (length = 784).
-%		\begin{center}
-%		\captionof{figure}{}
-%		\includegraphics[width=12cm]{Figure_2.png}
-%		\end{center}
-%		\newpage
 		\item The distribution of digits within the training data is nearly uniform.
 		\begin{center}
 		\includegraphics[width=12cm]{distrib.png}
 		\end{center}
 		
-		\item
+		\item 10 randomly picked digits and their closest matches are below.
+		
 		\begin{center}
 		\includegraphics[width=12cm]{matches.png}
+		\end{center}
+		
+		\item The confusion matrix for all digits is displayed below, with vertical axis is \textit{actual} and horizontal axis is \textit{predicted}.\\
+		\begin{center}
+		\includegraphics[width=12cm]{confusion_matrix.png}
 		\end{center}
 		
 	\end{enumerate}
 	\item The Titanic Disaster
 	\begin{enumerate}[label=(\alph*)]
-		\item datasets can be found in the \textit{./titanic\_data} directory.
+		\item The test datasets can be found in the \textit{./titanic\_data} directory.
 		\item Implementation is completed using scipy's LogisticRegression class and can be found in file titanic.py. Two things to note about the implementation:
 		\begin{itemize}
 		\item The categoricaly features are translated to \textit{One Hot} encoding before the classifier is parsed.
@@ -67,9 +67,8 @@
 
 \section*{Written Exercises}	
 \begin{enumerate}
-	\item Based on the defintions of variance:\\
+	\item Based on the defintions of variance and covariance,:\\
 	\centerline{$var(X) = E[(X - E[X])^2]$}
-	and covariance,\\
 	\centerline{$cov(X) = E[(Y - E[Y])(X - E[X])$}
 	we have:
 	\begin{align*}
@@ -125,9 +124,9 @@
 		\item For KNN classification with $n$ data points...
 		\begin{enumerate}
 			\item When $k = n$, all data points are considered for any prediction, and therefore any prediction will simply yield the prior probability of the training data. As k approaches 1, fewer training points are taken in to consideration for a prediction, therfore, as $k \rightarrow n$ the mean squared predicion error decreases.
-			\item  Removing half of training data lowers the \textit{density} of the training sample. This means that for any test point, $x$ it's \textit{nearest neighbors}($x_i \in N_k$) will be, on average, farther away(or less similiar). To maintain a consistent \textit{variance}, the value of $k$ must be descreased by a factor of $2$. 
+			\item  Removing half of the training data lowers the \textit{density} of the training sample. This means that for any test point $x$, it's \textit{nearest neighbors}($x_i \in N_k$) will be, on average, farther away(or less similiar to $x$). To maintain a consistent \textit{variance}, the value of $k$ must be descreased by a factor of $2$. 
 			
-			\item If we have a data set containing $n$ datapoints, the computational cost $C_i$, of performing cross validation for $i$ folds can be expressed as:
+			\item If we have a data set containing $n$ datapoints, the relative computational cost $C_i$, of performing cross validation, as a function of $i$ folds can be expressed as:
 			
 			\begin{equation*}
 			 C = i \left( \frac{n}{i} \right)\left( \frac{n(i-1}{i} \right) =  \frac{n^2(i-1)}{i}
@@ -135,12 +134,13 @@
 			
 			Extending our conclusion from (b), candidates for $k$ should be tested with an adjustment proportional to $\frac{i-1}{i}$ (specifically - adjust k according to the change in density that occurs when removing $\frac{1}{i}$th of the samples form the training data - see (e) one may also consider the dimensionality, of the feature vector, $x$). \\
 			
-			Choosing $i$ to be large(say - 10), will mitigate the impact of density reduction, however the larger $i$ is more computationally expensive($i \rightarrow \infty, C_i \rightarrow n^2$).
+			Choosing $i$ to be large (say 10), will mitigate the impact of density reduction, however the larger $i$ is more computationally expensive($i \rightarrow \infty, C_i \rightarrow n^2$).
 						
 			\item If $k$ is large, for some $x$ it may be beneficial to weigh votes from a neighbor $N_k(x)$ using some function $w$ that decreases as the distance $d$, from $x$ increases. E.g.:
 			\begin{equation*}
 				w_{k}(x,N_k(x) = \frac{1}{1 + d(x,N_k(x) )}
 			\end{equation*}
+			
 			\item As the dimension of a model increases, the \textit{closeness} of a point of it's neighbors decreases. That is the the size of neighborhood about a point does not scale linearly with the fraction of each each input dimension needed to cover that neighbor hood. If we consider the unit space in 1, 2, and 3 dimensions and create a subspace that is half of the input the unit spaces for each dimension, then the respective volume is $\frac{1}{2}$, $\frac{1}{4}$, and $\frac{1}{8}$. The inverse is also true; to maintain a fixed fraction of the total space, a large interval of each dimension must be considered. Additionally, the stability of the KNN algorithm relies upon a dense training sample. For a fixed number of points in dimension $N$, increasing the dimension by $p'$ requires a an increase in the number of data points on the order of to $N^\frac{1}{p'}$
 		\end{enumerate}
 		
