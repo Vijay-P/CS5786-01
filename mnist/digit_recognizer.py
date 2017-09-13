@@ -42,7 +42,7 @@ def prior_probability(df):
     plot.hist(labels, bins=bins, normed=True, align='left')
     plot.xticks(range(0, 10, 1))
     plot.plot((-1, 10), (.1, .1), '--')
-    plot.savefig("distrib.png")
+    plot.savefig("../images/distrib.png")
 
 
 def one_of_each_digit(df, out_transx=gridify_digit):
@@ -83,7 +83,7 @@ def save_one_grid_of_each_digit(df):
         display_digit(p, random_digits[d][0])
         p.title.set_text("#%d\nDigit=%d" % (random_digits[d][1], d))
 
-    fig.savefig("one_grid_x_each_digit.png")
+    fig.savefig("../images/one_grid_x_each_digit.png")
 
 
 def plot_one_vec_of_each_digit(df):
@@ -143,7 +143,7 @@ def plot_nearest_neighbor_for_each(df):
         p = fig.add_subplot(4, 5, x + 11)
         display_digit(p, match_d)
         p.title.set_text("Match=%d" % (match_l))
-    fig.savefig("matches.png")
+    fig.savefig("../images/matches.png")
 
 
 def all_of_digit(df, digit):
@@ -152,24 +152,20 @@ def all_of_digit(df, digit):
 
 
 def binary_comp(df):
-    zeroes = all_of_digit(df, 0)
+    zeros = all_of_digit(df, 0)
     ones = all_of_digit(df, 1)
-    zero_v_zero = l2_distances(zeroes, zeroes)
-    zero_v_one = l2_distances(zeroes, ones)
-    one_v_one = l2_distances(ones, ones)
+    zeros_vs_zeros = l2_distances(zeros, zeros)
+    ones_vs_ones = l2_distances(ones, ones)
+    zeros_vs_ones = l2_distances(zeros, ones)
     plot.figure()
-    plot.title("Zero vs Zero(b) and Zero vs One(r)")
-    zvz = plot.hist(np.array(zero_v_zero), bins=100, normed=True,
+    plot.title("True Positives(b) and True Negatives(r): Binary Comparison")
+    zvz = plot.hist(np.array(zeros_vs_zeros), bins=100, normed=True,
                     alpha=0.5, color="b", range=(0, 4500))
-    zvo = plot.hist(np.array(zero_v_one), bins=100, normed=True,
+    ovo = plot.hist(np.array(ones_vs_ones), bins=100, normed=True,
+                    alpha=0.5, color="b", range=(0, 4500))
+    zvo = plot.hist(np.array(zeros_vs_ones), bins=100, normed=True,
                     alpha=0.5, color="r", range=(0, 4500))
-    plot.savefig("zeroes_score.png")
-    plot.figure()
-    plot.title("One vs One(b) and Zero vs One(r)")
-    ovo = plot.hist(np.array(one_v_one), bins=100, normed=True,
-                    alpha=0.5, color="b", range=(0, 4500))
-    plot.hist(np.array(zero_v_one), bins=100, normed=True, alpha=0.5, color="r", range=(0, 4500))
-    plot.savefig("ones_score.png")
+    plot.savefig("../images/binary_comp.png")
     return zvz, zvo, ovo
 
 
@@ -215,7 +211,7 @@ def make_ROC(df):
     plot.text(eer[0], eer[1], str(eer[0])[:4] + "," + str(eer[1])[:4])
     plot.plot(eer[0], eer[1], "o")
     plot.plot(tnr, tpr, "-")
-    plot.savefig("ROC.png")
+    plot.savefig("../images/ROC.png")
 
 
 def knn(train_df, test_df):
@@ -318,9 +314,9 @@ def main():
     # prior_probability(df0)
     # plot.show()
     # plot_nearest_neighbor_for_each(df0)
-    # binary_comp(df0)
+    binary_comp(df0)
     # make_ROC(df0)
-    knn3(df0, df1)
+    # knn3(df0, df1)
 
 if __name__ == '__main__':
     main()
