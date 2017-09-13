@@ -25,7 +25,7 @@
 \section*{Programming Exercises}
 
 \begin{enumerate}
-	\item Digit Tokenizer
+	\item Digit Recognizer
 	\begin{enumerate}[label=(\alph*)]
 		\item 
 		Training and test data are located in files \textit{train.csv} and \textit{test.csv} respectively. The training data comprises 42000 images and the test data comprises 28000 images.
@@ -33,19 +33,24 @@
 		\item Figure 1 is one of each digit(0-9) displayed as a 28 by 28 pixel grid.  
 		\begin{center}
 		\captionof{figure}{}
-%		\includegraphics[width=12cm]{one_of_each_digit.png}
+		\includegraphics[width=12cm]{one_grid_x_each_digit.png}
 		\end{center}
-		Alternatively, the digit images can be plotted as one dimensional vectors (length = 784).
-		\begin{center}
-		\captionof{figure}{}
+%		Alternatively, the digit images can be plotted as one dimensional vectors (length = 784).
+%		\begin{center}
+%		\captionof{figure}{}
 %		\includegraphics[width=12cm]{Figure_2.png}
-		\end{center}
-		\newpage
+%		\end{center}
+%		\newpage
 		\item The distribution of digits within the training data is nearly uniform.
 		\begin{center}
 		\includegraphics[width=12cm]{distrib.png}
-		\end{center}	
+		\end{center}
+		
 		\item
+		\begin{center}
+		\includegraphics[width=12cm]{matches.png}
+		\end{center}
+		
 	\end{enumerate}
 	\item The Titanic Disaster
 	\begin{enumerate}[label=(\alph*)]
@@ -53,7 +58,7 @@
 		\item Implementation is completed using scipy's LogisticRegression class and can be found in file titanic.py. Two things to note about the implementation:
 		\begin{itemize}
 		\item The categoricaly features are translated to \textit{One Hot} encoding before the classifier is parsed.
-		\item Features \textit{PassengerId, Name, Ticket Fare, Cabin}, and \textit{Embarked} are ommitted from the classifer.  Through some trial and error, one can draw the conclusion that omitting these features yields a more accurate classifier, most likely because they are scarcely populated(E.g. Cabin) or contain a a high number of unique, categorical values(E.g. Fare). The values thus increase the dimensionality of the model while offer nothing but idiosyncracies that likely exist only in the sample training data.
+		\item Features \textit{PassengerId, Name, Ticket Fare, Cabin}, and \textit{Embarked} are ommitted from the classifer.  Through some trial and error, one can draw the conclusion that omitting these features yields a more accurate classifier, most likely because they are scarcely populated(E.g. Cabin has values in the test set do not exist in the training data) or contain a a high number of unique, categorical values(E.g. Fare). The values thus increase the dimensionality of the model while offering nothing but idiosyncracies that likely exist only in the sample training data.
 		\end{itemize}
 		\item the result of the classifier have been submitted to kaggle and can be found in the \textit{./titanic\_data}. 
 	\end{enumerate}
