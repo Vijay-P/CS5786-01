@@ -22,13 +22,13 @@
 	Vijay Pillai\\
 	Thomas Matecki}
 \maketitle
-
 \section*{Programming Exercises}
 
 \begin{enumerate}
 	\item Digit Tokenizer
 	\begin{enumerate}[label=(\alph*)]
-		\item Training and test data are located in files \textit{train.csv} and \textit{test.csv} respectively. The training data comprises 42000 images and the test data comprises 28000 images.
+		\item 
+		Training and test data are located in files \textit{train.csv} and \textit{test.csv} respectively. The training data comprises 42000 images and the test data comprises 28000 images.
 
 		\item Figure 1 is one of each digit(0-9) displayed as a 28 by 28 pixel grid.  
 		\begin{center}
@@ -43,25 +43,23 @@
 		\newpage
 		\item The distribution of digits within the training data is nearly uniform.
 		\begin{center}
-		\includegraphics[width=12cm{distrib.png}
+%		\includegraphics{distrib.png}
 		\end{center}	
 		\item
 	\end{enumerate}
 	\item The Titanic Disaster
-	\begin{enumerate}
-		\item Logistical regression is performed using scikit-learn's lLogisticalRegression. Two things to note:
-		\item The result submitted to kaggle is included as file \textit{result.csv}.
-
+	\begin{enumerate}[label=(\alph*)]
+		\item datasets can be found in the \textit{./titanic\_data} directory.
+		\item Implementation is completed using scipy's LogisticRegression class and can be found in file titanic.py. Two things to note about the implementation:
 		\begin{itemize}
 		\item The categoricaly features are translated to \textit{One Hot} encoding before the classifier is parsed.
-		\item Features \textit{PassengerId, Name, Ticket Fare, Cabin}, and \textit{Embarked} are ommitted from the classifer.  Through some trial and error, one can draw the conclusion that omitting these features yields a more accurate classifier, most likely because they are scarcely populated(E.g. Cabin) or contain a a high number of unique, categorical values(E.g. Fare). The values thus increase the dimensionality of the model while offer nothing but idiosyncracies that likely exist only in the training data.\\
+		\item Features \textit{PassengerId, Name, Ticket Fare, Cabin}, and \textit{Embarked} are ommitted from the classifer.  Through some trial and error, one can draw the conclusion that omitting these features yields a more accurate classifier, most likely because they are scarcely populated(E.g. Cabin) or contain a a high number of unique, categorical values(E.g. Fare). The values thus increase the dimensionality of the model while offer nothing but idiosyncracies that likely exist only in the training data.
 		\end{itemize}
-
-
+		\item the result of the classifier have been submitted to kaggle and can be found in the \textit{./titanic\_data}. 
 	\end{enumerate}
-	\end{enumerate}
-
+	
 \end{enumerate}
+
 \section*{Written Exercises}	
 \begin{enumerate}
 	\item Based on the defintions of variance:\\
@@ -119,7 +117,28 @@
 		\end{align*}
 		Therefore 499995 non-defective widgets are thrown out and 5 defective widgets are shipped per year.
 		\end{enumerate}
+		\item For KNN classification with $n$ data points...
+		\begin{enumerate}
+			\item When $k = n$, all data points are considered for any prediction, and therefore any prediction will simply yield the prior probability of the training data. As k approaches 1, fewer training points are taken in to consideration for a prediction, therfore, as $k \rightarrow n$ the mean squared predicion error decreases.
+			\item  Removing half of training data lowers the \textit{density} of the training sample. This means that for any test point, $x$ it's \textit{nearest neighbors}($x_i \in N_k$) will be, on average, farther away(or less similiar). To maintain a consistent \textit{variance}, the value of $k$ must be descreased by a factor of $2$. 
+			
+			\item If we have a data set containing $n$ datapoints, the computational cost $C_i$, of performing cross validation for $i$ folds can be expressed as:
+			
+			\begin{equation*}
+			 C = i \left( \frac{n}{i} \right)\left( \frac{n(i-1}{i} \right) =  \frac{n^2(i-1)}{i}
+			\end{equation*}
+			
+			Extending out conclusion from (b), candidates for $k$ should be tested with an adjustment proportional to $\frac{i-1}{i}$ (specifically - adjust k according to the change in density that occurs when removing $\frac{1}{i}$th of the samples in the dimension - see (e), of the feature vector, $x$). \\
+			
+			Choosing $i$ to be large(say - 10), will mitigate the impact of density reduction(dependent upon dimension), however the larger $i$ is more computationally expensive($C_i \rightarrow n^2$).			
+			\item If $k$ is large, for some $x$ it may be beneficial to weigh votes from a neighbor $N_k(x)$ using some function $w$ that decreases as the distance $d$, from $x$ increases. E.g.:
+			\begin{equation*}
+				w_{k}(x,N_k(x) = \frac{1}{1 + d(x,N_k(x) )}
+			\end{equation*}
+			\item As the dimension of a model increases, the \textit{closeness} of a point of it's neighbors decreases. That is the the size of neighborhood about a point does not scale linearly with the fraction of each each input dimension needed to cover that neighbor hood. If we consider the unit space in 1, 2, and 3 dimensions and create a subspace that is half of the input the unit spaces for each dimension, then the respective volume is $\frac{1}{2}$, $\frac{1}{4}$, and $\frac{1}{8}$. The inverse is also true; to maintain a fixed fraction of the total space, a large interval of each dimension must be considered. Additionally, the stability of the KNN algorithm relies upon a dense training sample. For a fixed number of points in dimension $N$, increasing the dimension by $p'$ requires a an increase in the number of data points on the order of to $N^\frac{1}{p'}$
+		\end{enumerate}
 		
+	
 \end{enumerate}
 
 \end{document}
