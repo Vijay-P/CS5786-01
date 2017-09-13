@@ -297,7 +297,7 @@ def knn3(train_df, test_df):
     f.close()
 
 
-def corss_validate(train_df):
+def cross_validate(train_df):
     n = 3
     b1 = np.asarray([pd.Series.as_matrix(train_df.ix[index, 1:])
                      for index in range(train_df.shape[0] / 3)])

@@ -35,7 +35,7 @@
 		\captionof{figure}{}
 		\includegraphics[width=12cm]{images/one_grid_x_each_digit.png}
 		\end{center}
-		\item The distribution of digits within the training data is nearly uniform.
+		\item The distribution of digits within the training data is not-uniform, but comparable. 
 		\begin{center}
 		\includegraphics[width=12cm]{images/distrib.png}
 		\end{center}
@@ -52,17 +52,23 @@ set of axes.\\
 		\includegraphics[width=12cm]{images/binary_comp.png}
 		\end{center}
 		
-		\item The image below exhibits the ROC curve for the genuine and imposter matches:
+		\item The image below exhibits the ROC curve for the genuine and imposter matches. The equal error rate is displayed at $\approx .78$. In the case of binary comparison, the error rate of a classifier that simply guesses is $\frac{1}{2}$.
 		
 		\begin{center}
 		\includegraphics[width=12cm]{images/ROC.png}
 		\end{center}
 		 
+		 
+		\item The KNN classifier is implmented in file \textit{mnist/digit\_recognizer.py} as function \textit{knn}
+		\item The KNN classifier is implmented in file \textit{mnist/digit\_recognizer.py} as function \textit{cross\_validate}
 		\item The confusion matrix for all digits is displayed below, with vertical axis is \textit{actual} and horizontal axis is \textit{predicted}.\\
 		\begin{center}
 		\includegraphics[width=12cm]{images/confusion_matrix.png}
 		\end{center}
-		
+		\item Submitted to kaggle:
+		\begin{center}
+		\includegraphics[width=16cm]{images/mnist_kaggle.png}
+		\end{center}
 	\end{enumerate}
 	\item The Titanic Disaster
 	\begin{enumerate}[label=(\alph*)]
@@ -73,6 +79,9 @@ set of axes.\\
 		\item Features \textit{PassengerId, Name, Ticket Fare, Cabin}, and \textit{Embarked} are ommitted from the classifer.  Through some trial and error, one can draw the conclusion that omitting these features yields a more accurate classifier, most likely because they are scarcely populated(E.g. Cabin has values in the test set do not exist in the training data) or contain a a high number of unique, categorical values(E.g. Fare). The values thus increase the dimensionality of the model while offering nothing but idiosyncracies that likely exist only in the sample training data.
 		\end{itemize}
 		\item the result of the classifier have been submitted to kaggle and can be found in the \textit{./titanic\_data}. 
+		\begin{center}
+		\includegraphics[width=16cm]{images/titanic_kaggle.png}
+		\end{center}
 	\end{enumerate}
 	
 \end{enumerate}
