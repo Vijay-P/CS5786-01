@@ -3,7 +3,9 @@
 from matplotlib import pyplot as plot
 import numpy as np
 from scipy.spatial import distance
+from scipy.spatial import distance_matrix
 from sklearn.metrics import euclidean_distances
+from collections import Counter
 import pandas as pd
 import random as rn
 
@@ -216,14 +218,109 @@ def make_ROC(df):
     plot.savefig("ROC.png")
 
 
+def knn(train_df, test_df):
+    f = open("submission.csv", "w")
+    f.write("ImageId, Label\n")
+    k = 5
+    training_digits = [[pd.Series.tolist(train_df.ix[index, 1:]), train_df.ix[index, 0]]
+                       for index in range(train_df.shape[0])]
+
+    testing_digits = [[pd.Series.tolist(test_df.ix[index, 0:]), index]
+                      for index in range(test_df.shape[0])]
+
+    for unclpt, index in testing_digits:
+        print(index)
+        k_nn = []
+        distances = []
+        labels = []
+        for tpt, label in training_digits:
+            distances.append(distance.euclidean(unclpt, tpt))
+            labels.append(label)
+        prevmin = -1
+        for p in range(k):
+            mindist = max(distances)
+            minlabel = 1
+            for x in range(len(distances)):
+                if distances[x] < mindist and distances[x] > prevmin:
+                    mindist = distances[x]
+                    minlabel = labels[x]
+            prevmin = mindist
+            k_nn.append(minlabel)
+        classify = max(k_nn, key=k_nn.count)
+        f.write(str(index) + ", " + str(classify) + "\n")
+    f.close()
+
+
+def knn2(train_df, test_df):
+    f = open("submission.csv", "w")
+    f.write("ImageId, Label\n")
+
+    training_digits = np.asarray([np.asarray([pd.Series.as_matrix(train_df.ix[index, 1:]), train_df.ix[index, 0]])
+                                  for index in range(train_df.shape[0])])
+
+    testing_digits = np.asarray([pd.Series.as_matrix(test_df.ix[index, 0:])
+                                 for index in range(test_df.shape[0])])
+
+    sliced_training = training_digits[0:, 0]
+    training_indices = np.asarray(training_digits[0:, 1])
+    k = 5
+
+    for unclpt in testing_digits:
+        print("begin")
+        distances = np.asarray([np.sum(np.square(np.subtract(unclpt, x))) for x in sliced_training])
+        ind = np.argpartition(distances, k)[:k]
+        k_values = np.ndarray.tolist(training_indices[ind])
+        classify = max(k_values, key=k_values.count)
+        f.write(str(index) + ", " + str(classify) + "\n")
+    f.close()
+
+
+def knn3(train_df, test_df):
+    f = open("submission.csv", "w")
+    f.write("ImageId, Label\n")
+
+    training_digits = np.asarray([pd.Series.as_matrix(train_df.ix[index, 1:])
+                                  for index in range(train_df.shape[0])])
+
+    training_labels = np.asarray([train_df.ix[index, 0] for index in range(train_df.shape[0])])
+
+    testing_digits = np.asarray([pd.Series.as_matrix(test_df.ix[index, 0:])
+                                 for index in range(test_df.shape[0])])
+
+    k = 5
+
+    counter = 1
+    for unclpt in testing_digits:
+        distances = cdist(np.array([unclpt]), training_digits)[0]
+        ind = np.argpartition(distances, k)[:k]
+        k_nn = distances[ind]
+        k_values = np.ndarray.tolist(training_labels[ind])
+        classify = max(k_values, key=k_values.count)
+        f.write(str(counter) + ", " + str(classify) + "\n")
+        counter += 1
+    f.close()
+
+
+def corss_validate(train_df):
+    n = 3
+    b1 = np.asarray([pd.Series.as_matrix(train_df.ix[index, 1:])
+                     for index in range(train_df.shape[0] / 3)])
+    b2 = np.asarray([pd.Series.as_matrix(train_df.ix[index, 1:])
+                     for index in range(train_df.shape[0] / 3, 2 * train_df.shape[0] / 3)])
+    b3 = np.asarray([pd.Series.as_matrix(train_df.ix[index, 1:])
+                     for index in range(2 * train_df.shape[0] / 3, 3 * train_df.shape[0] / 3)])
+
+
 def main():
-    df0 = pd.read_csv("../kaggle_mnist_dataset/train.csv")
+    df0 = pd.read_csv("kaggle_mnist_dataset/train.csv")
+    df1 = pd.read_csv("kaggle_mnist_dataset/test.csv")
     # display_digit(plot, gridify_digit(df0, 8))
     # prior_probability(df0)
     # plot.show()
     # plot_nearest_neighbor_for_each(df0)
     # binary_comp(df0)
-    make_ROC(df0)
+    # make_ROC(df0)
+    knn3(df0, df1)
 
 if __name__ == '__main__':
     main()
