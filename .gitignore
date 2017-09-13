@@ -1,3 +1,7 @@
 *.spydata
 error.spydata
 error2.spydata
+.spyderproject
+.spyderworkspace
+.swp
+.ipynb_checkpoints
