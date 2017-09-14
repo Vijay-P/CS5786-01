@@ -2,8 +2,8 @@
 
 from matplotlib import pyplot as plot
 import numpy as np
-from scipy.spatial import distance
-from scipy.spatial import distance_matrix
+from scipy.spatial.distance import euclidean
+from scipy.spatial.distance import cdist
 from sklearn.metrics import euclidean_distances
 from collections import Counter
 import pandas as pd
@@ -15,7 +15,7 @@ gridify_digit = lambda df, index: np.split(np.asarray(df.ix[index, 1:]), 28)
 vectorize_digit = lambda df, index: np.asarray(df.ix[index, 1:])
 
 
-def display_digit(p, grid):
+def display_digit(grid, p=plot):
     p.imshow(grid, cmap="gray_r")
 
     p.tick_params(
@@ -33,6 +33,8 @@ def display_digit(p, grid):
         bottom='off',
         labeltop='off',
         labelbottom='off')
+
+    p.show()
 
 
 def prior_probability(df):
@@ -115,7 +117,7 @@ def l2_match(input_digits, compare_digits):
         digit_tags = 0
         match_index = 0
         for dpoint in compare_digits:
-            current_l2 = distance.euclidean(data[0], dpoint[0])
+            current_l2 = euclidean(data[0], dpoint[0])
             if (current_l2 < min_distance) and (current_l2 != 0.0):
                 min_vector = dpoint[0]
                 min_distance = current_l2
@@ -214,77 +216,37 @@ def make_ROC(df):
     plot.savefig("../images/ROC.png")
 
 
-def knn(train_df, test_df):
-    f = open("submission.csv", "w")
-    f.write("ImageId, Label\n")
+def kaggle_knn(train_df, test_df):
+    with open("submission.csv", "w+") as f:
+        f.write("ImageId,Label\n")
+
+        train_df = pd.read_csv("kaggle_mnist_dataset/train.csv")
+        test_df = pd.read_csv("kaggle_mnist_dataset/test.csv")
+
+        training_digits = np.asarray([pd.Series.as_matrix(train_df.ix[index, 1:])
+                                      for index in range(train_df.shape[0])])
+
+        training_labels = np.asarray([train_df.ix[index, 0] for index in range(train_df.shape[0])])
+
+        testing_digits = np.asarray([pd.Series.as_matrix(test_df.ix[index, 0:])
+                                     for index in range(test_df.shape[0])])
+
+        k = 5
+
+        counter = 1
+        for unclpt in testing_digits:
+            distances = cdist(np.array([unclpt]), training_digits)[0]
+            ind = np.argpartition(distances, k)[:k]
+            k_nn = distances[ind]
+            k_values = np.ndarray.tolist(training_labels[ind])
+            classify = max(k_values, key=k_values.count)
+            f.write(str(counter) + "," + str(classify) + "\n")
+            counter += 1
+
+
+def knn(training_digits, training_labels, testing_digits):
+    results = []
     k = 5
-    training_digits = [[pd.Series.tolist(train_df.ix[index, 1:]), train_df.ix[index, 0]]
-                       for index in range(train_df.shape[0])]
-
-    testing_digits = [[pd.Series.tolist(test_df.ix[index, 0:]), index]
-                      for index in range(test_df.shape[0])]
-
-    for unclpt, index in testing_digits:
-        print(index)
-        k_nn = []
-        distances = []
-        labels = []
-        for tpt, label in training_digits:
-            distances.append(distance.euclidean(unclpt, tpt))
-            labels.append(label)
-        prevmin = -1
-        for p in range(k):
-            mindist = max(distances)
-            minlabel = 1
-            for x in range(len(distances)):
-                if distances[x] < mindist and distances[x] > prevmin:
-                    mindist = distances[x]
-                    minlabel = labels[x]
-            prevmin = mindist
-            k_nn.append(minlabel)
-        classify = max(k_nn, key=k_nn.count)
-        f.write(str(index) + ", " + str(classify) + "\n")
-    f.close()
-
-
-def knn2(train_df, test_df):
-    f = open("submission.csv", "w")
-    f.write("ImageId, Label\n")
-
-    training_digits = np.asarray([np.asarray([pd.Series.as_matrix(train_df.ix[index, 1:]), train_df.ix[index, 0]])
-                                  for index in range(train_df.shape[0])])
-
-    testing_digits = np.asarray([pd.Series.as_matrix(test_df.ix[index, 0:])
-                                 for index in range(test_df.shape[0])])
-
-    sliced_training = training_digits[0:, 0]
-    training_indices = np.asarray(training_digits[0:, 1])
-    k = 5
-
-    for unclpt in testing_digits:
-        print("begin")
-        distances = np.asarray([np.sum(np.square(np.subtract(unclpt, x))) for x in sliced_training])
-        ind = np.argpartition(distances, k)[:k]
-        k_values = np.ndarray.tolist(training_indices[ind])
-        classify = max(k_values, key=k_values.count)
-        f.write(str(index) + ", " + str(classify) + "\n")
-    f.close()
-
-
-def knn3(train_df, test_df):
-    f = open("submission.csv", "w")
-    f.write("ImageId, Label\n")
-
-    training_digits = np.asarray([pd.Series.as_matrix(train_df.ix[index, 1:])
-                                  for index in range(train_df.shape[0])])
-
-    training_labels = np.asarray([train_df.ix[index, 0] for index in range(train_df.shape[0])])
-
-    testing_digits = np.asarray([pd.Series.as_matrix(test_df.ix[index, 0:])
-                                 for index in range(test_df.shape[0])])
-
-    k = 5
-
     counter = 1
     for unclpt in testing_digits:
         distances = cdist(np.array([unclpt]), training_digits)[0]
@@ -292,31 +254,57 @@ def knn3(train_df, test_df):
         k_nn = distances[ind]
         k_values = np.ndarray.tolist(training_labels[ind])
         classify = max(k_values, key=k_values.count)
-        f.write(str(counter) + ", " + str(classify) + "\n")
+        results.append([counter, classify])
         counter += 1
-    f.close()
+    return results
 
 
-def corss_validate(train_df):
+def make_bin(df, n, binn):
+    return range(int((binn - 1) * (df.shape[0] / n)), int(binn * (df.shape[0] / n)))
+
+
+def cross_validate(train_df):
     n = 3
-    b1 = np.asarray([pd.Series.as_matrix(train_df.ix[index, 1:])
-                     for index in range(train_df.shape[0] / 3)])
-    b2 = np.asarray([pd.Series.as_matrix(train_df.ix[index, 1:])
-                     for index in range(train_df.shape[0] / 3, 2 * train_df.shape[0] / 3)])
-    b3 = np.asarray([pd.Series.as_matrix(train_df.ix[index, 1:])
-                     for index in range(2 * train_df.shape[0] / 3, 3 * train_df.shape[0] / 3)])
 
+    training_data = [np.asarray([pd.Series.as_matrix(train_df.ix[index, 1:])
+                                 for index in make_bin(train_df, n, binn)]) for binn in range(1, n + 1)]
 
-def main():
-    df0 = pd.read_csv("kaggle_mnist_dataset/train.csv")
-    df1 = pd.read_csv("kaggle_mnist_dataset/test.csv")
-    # display_digit(plot, gridify_digit(df0, 8))
-    # prior_probability(df0)
-    # plot.show()
-    # plot_nearest_neighbor_for_each(df0)
-    binary_comp(df0)
-    # make_ROC(df0)
-    # knn3(df0, df1)
+    training_labels = [np.asarray([train_df.ix[index, 0]
+                                   for index in make_bin(train_df, n, binn)]) for binn in range(1, n + 1)]
+
+    confusion_matrix = np.zeros((10, 10))
+    for actual in range(10):
+        confusion_matrix[actual][actual] = train_df.shape[0] * ((n * 2) / n)
+
+    total_error = 0
+    for test in range(n):
+        for train_bin in range(n):
+            if train_bin != test:
+                classification = knn(training_data[train_bin], training_labels[
+                                     train_bin], training_data[test])
+                test_actual = training_labels[test]
+                for x in range(len(classification)):
+                    if classification[x][1] != test_actual[x]:
+                        confusion_matrix[test_actual[x]][classification[x][1]] += 1
+                        confusion_matrix[test_actual[x]][test_actual[x]] -= 1
+                        total_error += 1
+
+    percent_calc = np.full((10, 10), train_df.shape[0] * ((n * 2) / n))
+
+    confusion_matrix = np.multiply(np.divide(confusion_matrix, percent_calc), 100)
+
+    accuracy = 1 - (total_error / (train_df.shape[0] * ((n * 2) / n)))
+
+    print(confusion_matrix)
+    print(accuracy)
 
 if __name__ == '__main__':
-    main()
+    df0 = pd.read_csv("kaggle_mnist_dataset/train.csv")
+    df1 = pd.read_csv("kaggle_mnist_dataset/test.csv")
+    # display_digit(gridify_digit(df0, 8))
+    # prior_probability(df0)
+    # plot_nearest_neighbor_for_each(df0)
+    # binary_comp(df0)
+    # make_ROC(df0)
+    # kaggle_knn(df0, df1)
+    # cross_validate(df0)
