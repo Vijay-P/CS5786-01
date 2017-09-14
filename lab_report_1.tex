@@ -152,8 +152,10 @@ set of axes.\\
 		\item For KNN classification with $n$ data points...
 		\begin{enumerate}
 			\item When $k = n$, all data points are considered for any prediction, and therefore any prediction will simply yield the prior probability of the training data. As k approaches 1, fewer training points are taken in to consideration for a prediction, therfore, as $k \rightarrow n$ the mean squared prediction error decreases. When $k = 1$, the classifier considers only $x_i$ for prediction, and thus the prediction error becomes 0.
-			\item  Removing half of the training data lowers the \textit{density} of the training sample. This means that for any test point $x$, it's \textit{nearest neighbors}($x_i \in N_k$) will be, on average, farther away (or less similiar to $x$). To maintain a consistent \textit{variance}, the value of $k$ must be decreased by a factor of $2$. If $k$ is decreased, the variance increases. As $k$ approaches 1, the 0-1 prediction error approaches 0 just as before (it will be 0 for some samples due to the overlap).
-			
+			\item Previously, when training and testing data were the same set of points, the 0-1 prediction error was 0 for for $k=1$, and approaches $\frac{1}{2}$ as k approaches $n$. When testing on the \textit{held-out half}, the error is low to when $k=1$ (relative to how much the 0-1 classes \text{overlap}) and gradually increases to $\frac{1}{2}$ as $k$ approaches $n$. In the image below, the dotted line is training kNN with all of the training data as in (a) and the solid line is when the training data is split.
+			\begin{center}
+			\includegraphics[width=7cm]{images/sketch_8b.png}
+			\end{center}
 			\item If we have a data set containing $n$ datapoints, the relative computational cost $C_i$, of performing cross validation, as a function of $i$ folds can be expressed as:
 			
 			\begin{equation*}
@@ -161,14 +163,14 @@ set of axes.\\
 			\end{equation*}
 			
 			\begin{equation*}
-			 C = i \left( \frac{n}{i} \right)\left( \frac{n(i-1)}{i} \right) =  \frac{n^2(i-1)}{i}
+			 C_i = i \left( \frac{n}{i} \right)\left( \frac{n(i-1)}{i} \right) =  \frac{n^2(i-1)}{i}
 			\end{equation*}
 			
 			\newpage
 			
 			Extending our conclusion from (b), candidates for $k$ should be tested with an adjustment proportional to $\frac{i-1}{i}$ (specifically - adjust k according to the change in density that occurs when removing $\frac{1}{i}$th of the samples from the training data - see (e); one may also consider the dimensionality, of the feature vector, $x$). \\
 			
-			Choosing $i$ to be large (say 10), will mitigate the impact of density reduction, however the larger $i$ is more computationally expensive($i \rightarrow \infty, C_i \rightarrow n^2$). As such, if performance is a concern, then $k=3$ is a reasonable choice for at this point, $C=\frac{2}{3} n^2$. Once $k=5$, however, $C=\frac{4}{5} n^2$, and at $k=10$, $C=\frac{9}{10} n^2$. At this point, any savings in cost are negligible.
+			Choosing $i$ to be large (say 10), will mitigate the impact of density reduction, however the larger $i$ is more computationally expensive($i \rightarrow \infty, C_i \rightarrow n^2$). As such, if performance is a concern, then $k=3$ is a reasonable choice for at this point, $C=\frac{2}{3} n^2$. Once $k=5$, however, $C=\frac{4}{5} n^2$, and at $k=10$, $C=\frac{9}{10} n^2$. At this point, any sadvings in cost are negligible.
 						
 			\item If $k$ is large, for some $x$ it may be beneficial to weigh votes from a neighbor $N_k(x)$ using some function $w$ that decreases as the distance $d$, from $x$ increases. E.g.:
 			\begin{equation*}
